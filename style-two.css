@@ -1,0 +1,33 @@
+body {
+    background-image: url("https://chloejackman.com/wp-content/uploads/2017/05/Chloe-Jackman-Photography-Asian-Art-Museum-Wedding-2017-1039-copy.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.mainContainer {
+    background-color: rgb(255, 255, 255);
+    padding: 20px 0px 10px 0px;
+    margin: 20px auto;
+    width: 1380px;
+    height: 840px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.32), 0 3px 12px 0 rgba(0, 0, 0, 0.24);
+    position: relative;
+}
+
+.title {
+    margin-left: 60px;
+    margin-right: 60px;
+    font-size: 28pt;
+    font-family: "Consolas";
+    font-weight: bold;
+    color: #f19a9a;
+    text-align: center;
+    padding: 15px 0px 15px 0px;
+    border-top-style: dotted;
+    border-right-style: solid;
+    border-bottom-style: dotted;
+    border-left-style: solid;
+    border-width: 5px 10px;
+    border-radius: 10px;
+}

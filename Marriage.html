@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head> 
+  
+  <!-- Title of HTML Page -->
+  <meta charset="utf-8">
+  <title> Age of Marriage in Singapore </title>
+
+  <!-- Linking the CSS sheet into HTML -->
+  <link rel = "stylesheet" href = "style-two.css">
+
+  <!-- Load the latest version of d3.js -->
+  <script src = "https://d3js.org/d3.v7.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Create a mainContainer class where the elements of the line charts will be placed -->
+    <div class = "mainContainer">
+  
+      <!-- Title of Small Multiples -->
+      <div class = "title">Proportion of Married Males and Females across Age Groups over a 40-year period</div>
+      
+      <!-- Creating a div for the small multiples -->
+      <div id = "chart"></div>
+  
+    </div>
+
+</body>
+
+<script>
+
+// Setting the dimensions and margins of the chart
+const margin = {top: 50, right: 20, bottom: 40, left: 130},
+    width = 400 - margin.left - margin.right,
+    height = 230 - margin.top - margin.bottom;
+
+// Reading the data
+d3.csv("average_marry.csv").then( function(data) {
+
+  // Grouping the data to show one line per age group
+  const sumstat = d3.group(data, d => d.age_group) // nest function allows to group the calculation per level of a factor
+
+  // Creating the list of age groups
+  allKeys = new Set(data.map(d => d.age_group))
+
+  // Adding an svg element for each age group. They will be one beside each other and will go on the next row when there is no more space.
+  const svg = d3.select("#chart")
+    .selectAll("Uniquechart")
+    .data(sumstat)
+    .enter()
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", 
+            `translate(${margin.left},${margin.top})`);
+
+  // Function to process the "year" column in time format
+  var parseTime = d3.timeParse("%Y");
+
+  // Calling the function to convert the "year" column
+  data.forEach(function(d) {
+    d.year = parseTime(d.year)
+  });
+
+  // Building the X-axis
+  const x = d3.scaleTime()
+    .domain(d3.extent(data, function (d) { return d.year; }))
+    .range([ 0, width ]);
+  svg
+    .append("g")
+    .style("font-weight", "bold")
+    .style("font-size", 11)
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x).tickSize(0))
+    .call(d3.axisBottom(x).ticks(5));
+
+  // Building the Y-axis
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(data, function(d) { return + d.proportion; })])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .style("font-weight", "bold")
+    .style("font-size", 11)
+    .call(d3.axisLeft(y).ticks(5));
+
+  // Creating color palette
+  const color = d3.scaleOrdinal()
+    .range(['#377eb8', '#f781bf'])//, '#4daf4a', '#984ea3', '#ff7f00', '#e41a1c', '#a65628', '#999999'])
+
+  // Drawing the line
+  svg.append("path")
+    .attr("fill", "none")
+    .attr("stroke", function(d){ return color(d[0]) })
+    .attr("stroke-width", 2.5)
+    .attr("d", function(d){
+        return d3.line()
+          .x(function(d) { return x(d.year); })
+          .y(function(d) { return y(d.proportion); })
+          (d[1])
+      })
+
+  // Add titles and labels to the respective x and y axis
+  svg.append("text")
+    .attr("text-anchor", "start")
+    .attr("font-family", "Comic Sans MS")
+    .attr("y", -15)
+    .attr("x", 60)
+    .text(function(d){ return(d[0])})
+    .style("fill", function(d){ return color(d[0]) });
+
+  svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("font-family", "Arial")
+    .style("font-weight", "bold")
+    .attr("font-size", 13)
+    .attr("x", width + 20)
+    .attr("y", height + 35)
+    .text("[ Year ]");
+
+  svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("font-family", "Arial")
+    .style("font-weight", "bold")
+    .attr("font-size", 13)
+    .attr("y", -55)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("[ Proportion ]");
+})
+
+</script>
